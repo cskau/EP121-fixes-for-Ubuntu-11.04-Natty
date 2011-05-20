@@ -15,6 +15,9 @@ echo "bluez hold" | sudo dpkg --set-selections
 
 ## Fix touch screen
 
+# disable evdev driver for the touch screen
+wget --no-check-certificate https://github.com/cskau/EP121-fixes-for-Ubuntu-11.04-Natty/raw/master/09-ep121.conf
+sudo cp ./09-ep121.conf /usr/share/X11/xorg.conf.d/
 # install "driver" in user's bin folder
 wget --no-check-certificate https://github.com/cskau/EP121-fixes-for-Ubuntu-11.04-Natty/raw/master/ep121_drv.py -P ~/bin/
 # grant the driver read access to input devices
