@@ -101,10 +101,11 @@ while True:
                 touch[i] = touch_tmp
                 continue
             mouse.btn_up(1)
-            if xys[i][1] > xys_newy+5:
+            # Modulus to make it slightly less sensitive
+            if xys[i][1] > xys_newy and not xys_newy % 4:
                 scrolled = True
                 mouse.click(4) # scroll down
-            elif xys[i][1] < xys_newy-5:
+            elif xys[i][1] < xys_newy and not xys_newy % 4:
                 scrolled = True
                 mouse.click(5) # scroll up
             update_mouse(xys_newx,xys_newy)
