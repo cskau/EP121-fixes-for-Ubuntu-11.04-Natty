@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, sys, xaut, threading # time
+import os, sys, xaut, threading, random
 from struct import *
 
 
@@ -102,12 +102,14 @@ while True:
                 continue
             mouse.btn_up(1)
             # Modulus to make it slightly less sensitive
-            if xys[i][1] > xys_newy and not xys_newy % 4:
-                scrolled = True
-                mouse.click(4) # scroll down
-            elif xys[i][1] < xys_newy and not xys_newy % 4:
-                scrolled = True
-                mouse.click(5) # scroll up
+            if xys[i][1] > xys_newy:# and not xys_newy % 4:
+                if random.randint(0,6)==0:
+                    scrolled = True
+                    mouse.click(4) # scroll down
+            elif xys[i][1] < xys_newy:# and not xys_newy % 4:
+                if random.randint(0,6)==0:
+                    scrolled = True
+                    mouse.click(5) # scroll up
             update_mouse(xys_newx,xys_newy)
             touch[i] = touch_tmp
             continue

@@ -1,6 +1,7 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 REPO="https://github.com/cskau/EP121-fixes-for-Ubuntu-11.04-Natty/raw/master/"
+BINDIR="$HOME/bin/"
 
 ## Fix Bluetooth applet/service
 # note: on board bluetooth seems to still lacks kernel driver .. or something ..
@@ -18,27 +19,40 @@ fi
 
 ## Fix touch screen
 
-# disable evdev driver for the touch screen
+# overrule evdev driver for the touch screen - replace with ignore rule
 wget --no-check-certificate ${REPO}09-ep121.conf
-sudo cp ./09-ep121.conf /usr/share/X11/xorg.conf.d/
+sudo cp -i ./09-ep121.conf /usr/share/X11/xorg.conf.d/
 # install "driver" in user's bin folder (should already be in PATH)
-wget --no-check-certificate ${REPO}ep121_drv.py -P ~/bin/
-wget --no-check-certificate ${REPO}_xautpy.so -P ~/bin/
-wget --no-check-certificate ${REPO}xaut.py -P ~/bin/
+wget --no-check-certificate ${REPO}ep121_drv.py
+sudo cp -i ./ep121_drv.py ${BINDIR}
+wget --no-check-certificate ${REPO}_xautpy.so
+sudo cp -i ./_xautpy.so ${BINDIR}
+wget --no-check-certificate ${REPO}xaut.py
+sudo cp -i ./xaut.py ${BINDIR}
 # makes driver executable
-chmod +x ~/bin/ep121_drv.py
+chmod +x ${BINDIR}/ep121_drv.py
 # grant the driver read access to input devices
 # TODO: this should be narrowed down to only the two files we actually use
 echo "SUBSYSTEM==\"input\", MODE=\"644\"" | sudo tee -a /etc/udev/rules.d/85-ep121.rules
 # make sure the driver runs at login
-if [ -e "~/.bash_login" ]; then
-    echo "ep121_drv.py &" >> ~/.bash_login
-elif [ -e "~/.bash_profile" ]; then
-    echo "ep121_drv.py &" >> ~/.bash_profile
-elif [ -e "~/.profile" ]; then
-    echo "ep121_drv.py &" >> ~/.profile
+if [ -e "$HOME/.bash_login" ]; then
+    if [ -n "`grep \"ep121_drv.py &\" \"$HOME/.bash_login\"`" ]; then
+        echo "ep121_drv.py &" >> $HOME/.bash_login
+    fi
+elif [ -e "$HOME/.bash_profile" ]; then
+    if [ -n "`grep \"ep121_drv.py &\" \"$HOME/.bash_profile\"`" ]; then
+        echo "ep121_drv.py &" >> $HOME/.bash_profile
+    fi
+elif [ -e "$HOME/.profile" ]; then
+    if [ -n "`grep \"ep121_drv.py &\" \"$HOME/.profile\"`" ]; then
+        echo "ep121_drv.py &" >> $HOME/.profile
+    fi
 else
-    echo "ERROR: Could not find login script. So driver wont start automatically !"
+    echo "WARNING: Could not find login or profile script."
+    echo "Adding .profile to home folder. Please make sure this is the right thing to do."
+    if [ -n "`grep \"ep121_drv.py &\" \"$HOME/.profile\"`" ]; then
+        echo "ep121_drv.py &" >> $HOME/.profile
+    fi
 fi
 
 
