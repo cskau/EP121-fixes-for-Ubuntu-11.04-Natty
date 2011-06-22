@@ -33,24 +33,30 @@ sudo cp -i ./xaut.py ${BINDIR}
 chmod +x ${BINDIR}/ep121_drv.py
 # grant the driver read access to input devices
 # TODO: this should be narrowed down to only the two files we actually use
-echo "SUBSYSTEM==\"input\", MODE=\"644\"" | sudo tee -a /etc/udev/rules.d/85-ep121.rules
+if [ -z "`grep \"SUBSYSTEM==\\\"input\\\", MODE=\\\"644\\\"\" \"/etc/udev/rules.d/85-ep121.rules\"`" ]; then
+    echo "Adding read access rule to /etc/udev/rules.d/85-ep121.rules"
+    echo "SUBSYSTEM==\"input\", MODE=\"644\"" | sudo tee -a /etc/udev/rules.d/85-ep121.rules
+fi
 # make sure the driver runs at login
 if [ -e "$HOME/.bash_login" ]; then
-    if [ -n "`grep \"ep121_drv.py &\" \"$HOME/.bash_login\"`" ]; then
+    if [ -z "`grep \"ep121_drv.py &\" \"$HOME/.bash_login\"`" ]; then
+        echo "Adding ep121_drv.py to $HOME/.bash_login"
         echo "ep121_drv.py &" >> $HOME/.bash_login
     fi
 elif [ -e "$HOME/.bash_profile" ]; then
-    if [ -n "`grep \"ep121_drv.py &\" \"$HOME/.bash_profile\"`" ]; then
+    if [ -z "`grep \"ep121_drv.py &\" \"$HOME/.bash_profile\"`" ]; then
+        echo "Adding ep121_drv.py to $HOME/.bash_profile"
         echo "ep121_drv.py &" >> $HOME/.bash_profile
     fi
 elif [ -e "$HOME/.profile" ]; then
-    if [ -n "`grep \"ep121_drv.py &\" \"$HOME/.profile\"`" ]; then
+    if [ -z "`grep \"ep121_drv.py &\" \"$HOME/.profile\"`" ]; then
+        echo "Adding ep121_drv.py to $HOME/.profile"
         echo "ep121_drv.py &" >> $HOME/.profile
     fi
 else
     echo "WARNING: Could not find login or profile script."
     echo "Adding .profile to home folder. Please make sure this is the right thing to do."
-    if [ -n "`grep \"ep121_drv.py &\" \"$HOME/.profile\"`" ]; then
+    if [ -z "`grep \"ep121_drv.py &\" \"$HOME/.profile\"`" ]; then
         echo "ep121_drv.py &" >> $HOME/.profile
     fi
 fi
